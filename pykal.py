@@ -21,7 +21,11 @@ def do_hav(source_lat,source_lng,dest_lat,dest_lng):
 def gps_to_cartesian(coordinates,inverted=False):
 	p = Proj(proj='utm',zone=17,ellps='WGS84')
 	converted = []
-	for lat,lng,alt in coordinates:
+	for point in coordinates:
+		lat = point[0] 
+		lng = point[1] 
+		alt = point[2] 
+		
 		if inverted:
 			x,y = p(lng,lat,inverse=True)	
 		else:
@@ -111,12 +115,16 @@ def run_kal(measurements, training_size=40):
 	for i in range(min(training_size,len(measurements))):
 		training_set.append(measurements[i])
 
-	# run the filter
-	kf = KalmanFilter(initial_state_mean=[0,0,0], n_dim_obs=3)
-	(smoothed_state_means, smoothed_state_covariances) = kf.em(training_set).smooth(measurements)
+	if simple_mode:
+		# run the filter
+		kf = KalmanFilter(initial_state_mean=[0,0,0], n_dim_obs=3)
+		(smoothed_state_means, smoothed_state_covariances) = kf.em(training_set).smooth(measurements)
+	else:
+		kf = KalmanFilter(initial_state_mean=[0,0,0,0,0,0,0,0,0], n_dim_obs=9)
+		(smoothed_state_means, smoothed_state_covariances) = kf.em(training_set).smooth(measurements)
+		
 	# means represent corrected points
-	
-	return smoothed_state_means, smoothed_state_covariances
+	return smoothed_state_means, smoothed_state_covariances, simple_mode
 
 def load_gps_trail(extra_fields = False):
 	i = 0
@@ -217,8 +225,11 @@ try:
 except OSError, e:
 	pass
 
+#EXTRA
+parse_extra_fields = True
+
 # Load the path in from the file 
-measurements = load_gps_trail(extra_fields = True)
+measurements = load_gps_trail(extra_fields = parse_extra_fields )
 
 # Convert these measurements to meters
 cart_measurements = gps_to_cartesian(measurements)
