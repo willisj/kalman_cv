@@ -190,7 +190,7 @@ def plot_first_dim(data,flip_xy=True,xlbl="",ylbl="",title="",filename=None):
 	plt.scatter(x_axis,y_axis)
 	
 	if filename:
-		plt.savefig(filename)
+		plt.savefig( filename)
 	else:	
 		plt.show()
 
@@ -198,7 +198,7 @@ def plot_first_dim(data,flip_xy=True,xlbl="",ylbl="",title="",filename=None):
 	
 def plot_all_dimensions(positions,file_prefix):
 	split = [list(), list(), list()]
-	
+
 	j = 0 
 	for position in positions:
 		for i in range(3):
@@ -209,9 +209,9 @@ def plot_all_dimensions(positions,file_prefix):
 	y_vals = split[1]
 	z_vals = split[2]
 
-	plot_first_dim(x_vals,flip_xy=False,xlbl="Time (s)",ylbl="UTM Latitude",title="UTM LATITUDE OVER TIME",filename=file_prefix + "all_dim_x")
-	plot_first_dim(y_vals,flip_xy=False,xlbl="Time (s)",ylbl="UTM Longiute",title="UTM LATITUDE OVER TIME",filename=file_prefix + "all_dim_y")
-	plot_first_dim(z_vals,flip_xy=False,xlbl="Time (s)",ylbl="Altitude ",title="Altitude OVER TIME",filename=file_prefix + "all_dim_z")
+	plot_first_dim(x_vals,flip_xy=False,xlbl="Time (s)",ylbl="UTM Latitude",title="UTM LATITUDE OVER TIME",filename=output_dir +file_prefix + "all_dim_x")
+	plot_first_dim(y_vals,flip_xy=False,xlbl="Time (s)",ylbl="UTM Longiute",title="UTM LATITUDE OVER TIME",filename=output_dir +file_prefix + "all_dim_y")
+	plot_first_dim(z_vals,flip_xy=False,xlbl="Time (s)",ylbl="Altitude ",title="Altitude OVER TIME",filename=output_dir +file_prefix + "all_dim_z")
 	
 	
 	
@@ -239,7 +239,7 @@ cart_measurements = gps_to_cartesian(measurements)
 #############################
 
 # Run the Kalman filter on the measurements
-ss_means_meas, ss_covariance_meas = run_kal(cart_measurements,training_size=60)
+ss_means_meas, ss_covariance_meas,cart_simple = run_kal(cart_measurements,training_size=60)
 filtered_cart_measurements = ss_means_meas		# Give this a more meaningful name
 
 #############################
@@ -250,7 +250,7 @@ filtered_cart_measurements = ss_means_meas		# Give this a more meaningful name
 offsets = calculate_offsets(cart_measurements)
 
 # Run the Kalman filter on the offsets
-ss_means, ss_covariance = run_kal(offsets)
+ss_means, ss_covariance,offset_simple = run_kal(offsets)
 corrected_offsets = ss_means	# Give this a more meaningful name
 
 # Reconstruct the cartesian positions from the offsets and a reference point
@@ -328,7 +328,7 @@ plt.savefig(output_dir + "point_variance.png")
 
 # output corrected file
 
-f = open(output_dir[1] + 'gps_trail_filtered.csv', 'w')
+f = open(output_dir + 'gps_trail_filtered.csv', 'w')
 f.write('lat,lng,alt\n')
 for x,y,z in corrected_gps_positions:
 	f.write("{0}, {1}, {2}\n".format(x,y,z))
