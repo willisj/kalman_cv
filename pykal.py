@@ -106,6 +106,16 @@ def run_kal(measurements, training_size=40):
 	if dim == 3:
 		simple_mode = True
 	elif dim == 9:
+		trans_matrix = [
+			[1, 0, 0, 1, 0, 0, 0.5, 0, 0 ],
+			[0, 1, 0, 0, 1, 0, 0, 0.5, 0 ],
+			[0, 0, 1, 0, 0, 1, 0, 0, 0.5 ],
+			[0, 0, 0, 1, 0, 0, 1, 0, 0 ],
+			[0, 0, 0, 0, 1, 0, 0, 1, 0 ],
+			[0, 0, 0, 0, 0, 1, 0, 0, 1 ],
+			[0, 0, 0, 0, 0, 0, 1, 0, 0 ],
+			[0, 0, 0, 0, 0, 0, 0, 1, 0 ],
+			[0, 0, 0, 0, 0, 0, 0, 0, 1 ] ];
 		simple_mode = False
 	else:
 		print "Error: Dimensions for run_kal must be 3 or 9"
@@ -120,7 +130,8 @@ def run_kal(measurements, training_size=40):
 		kf = KalmanFilter(initial_state_mean=[0,0,0], n_dim_obs=3)
 		(smoothed_state_means, smoothed_state_covariances) = kf.em(training_set).smooth(measurements)
 	else:
-		kf = KalmanFilter(initial_state_mean=[0,0,0,0,0,0,0,0,0], n_dim_obs=9)
+		# kf = KalmanFilter(initial_state_mean=[0,0,0,0,0,0,0,0,0], n_dim_obs=9)
+		kf = KalmanFilter(initial_state_mean=[0,0,0,0,0,0,0,0,0], transition_matrix=trans_matrix, n_dim_obs=9)
 		(smoothed_state_means, smoothed_state_covariances) = kf.em(training_set).smooth(measurements)
 		
 	# means represent corrected points
